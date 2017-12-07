@@ -29,6 +29,7 @@ module.exports = {
 
     text: barAttrs.text,
     orientation: barAttrs.orientation,
+    cornerroundness: barAttrs.cornerroundness,
 
     histfunc: {
         valType: 'enumerated',
