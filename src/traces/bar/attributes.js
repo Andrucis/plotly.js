@@ -138,6 +138,56 @@ module.exports = {
         ].join(' ')
     },
 
+    cornerroundness: {
+        bottomleft: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0,
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets round corner for bar bottom left edge,',
+                'taking into account direction.',
+                'Value represents percentage of desirable roundness.'
+            ].join(' ')
+        },
+        bottomright: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0,
+            role: 'info',
+            editType: 'calc',
+        },
+        topleft: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0,
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets round corner for bar top left edge,',
+                'taking into account direction.',
+                'Value represents percentage of desirable roundness.'
+            ].join(' ')
+        },
+        topright: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0,
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets round corner for bar top right edge,',
+                'taking into account direction.',
+                'Value represents percentage of desirable roundness.'
+            ].join(' ')
+        }
+    },
+
     base: {
         valType: 'any',
         dflt: null,

@@ -31,10 +31,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+    coerce('cornerroundness.bottomleft');
+    coerce('cornerroundness.bottomright');
+    coerce('cornerroundness.topleft');
+    coerce('cornerroundness.topright');
     coerce('base');
     coerce('offset');
     coerce('width');
-
     coerce('text');
     coerce('hovertext');
 

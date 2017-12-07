@@ -36,6 +36,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
         sample = traceOut[orientation === 'v' ? 'x' : 'y'];
 
+    coerce('cornerroundness.bottomleft');
+    coerce('cornerroundness.bottomright');
+    coerce('cornerroundness.topleft');
+    coerce('cornerroundness.topright');
+
     if(!(sample && sample.length)) {
         traceOut.visible = false;
         return;
