@@ -185,7 +185,8 @@ module.exports = {
                 'taking into account direction.',
                 'Value represents percentage of desirable roundness.'
             ].join(' ')
-        }
+        },
+        editType: 'calc'
     },
 
     base: {
