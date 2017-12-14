@@ -2,7 +2,7 @@
     "data": [
     {
         "x": [10, 7, 9],
-        "y": [18, 24, 13],
+        "y": [-8, -14, -3],
         "name": "Horizontal right values",
         "orientation": "h",
         "cornerroundness": {
