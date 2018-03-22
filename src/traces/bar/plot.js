@@ -9,7 +9,7 @@
 
 'use strict';
 
-var _ = require('../../../node_modules/underscore');
+var underscore = require('underscore');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
@@ -195,18 +195,18 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                 // append bar path and text
                 var bar = d3.select(this);
 
-                    bar.append('path')
+                bar.append('path')
                         .style('vector-effect', 'non-scaling-stroke')
                         .attr('d', generatePathDescription(x0, y0, x1, y1, blr, brr, tlr, trr))
                         .call(Drawing.setClipUrl, plotinfo.layerClipId);
 
-                    appendBarText(gd, bar, d, i, x0, x1, y0, y1);
+                appendBarText(gd, bar, d, i, x0, x1, y0, y1);
 
-                    if(plotinfo.layerClipId) {
-                        Drawing.hideOutsideRangePoint(d[i], bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
-                    }
-                });
-        });
+                if(plotinfo.layerClipId) {
+                    Drawing.hideOutsideRangePoint(d[i], bar.select('text'), plotinfo.xaxis, plotinfo.yaxi, trace.xcalendar, trace.ycalendar);
+                }
+            });
+    });
 
     // error bars are on the top
     Registry.getComponentMethod('errorbars', 'plot')(bartraces, plotinfo);
@@ -378,7 +378,7 @@ function calculatePositionInStack(cdbar) {
     // and whether the bar is in stack top or bottom
     var array = [];
     for(var i = 0; i < cdbar.length; i++) {
-        var object = (cdbar[i][0].trace.orientation === 'v') ? _.object(cdbar[i][0].trace.x, cdbar[i][0].trace.y) : _.object(cdbar[i][0].trace.y, cdbar[i][0].trace.x);
+        var object = (cdbar[i][0].trace.orientation === 'v') ? underscore.object(cdbar[i][0].trace.x, cdbar[i][0].trace.y) : underscore.object(cdbar[i][0].trace.y, cdbar[i][0].trace.x);
         array.push(object);
     }
     var index = 0;
