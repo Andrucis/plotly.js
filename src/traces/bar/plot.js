@@ -9,6 +9,7 @@
 
 'use strict';
 
+var underscore = require('underscore');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
@@ -31,9 +32,17 @@ var attributes = require('./attributes'),
 var TEXTPAD = 3;
 
 module.exports = function plot(gd, plotinfo, cdbar) {
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        fullLayout = gd._fullLayout;
+    var fullLayout = gd._fullLayout;
+
+    cdbar.forEach(function(d, i) {
+        cdbar[i] = calculateBarCoordinates(d, plotinfo.xaxis, plotinfo.yaxis);
+    });
+
+    if(gd._fullLayout.barmode === 'stack' || gd._fullLayout.barmode === 'relative') {
+        cdbar = calculatePositionInStack(cdbar);
+    }
+
+    var maxBarRadius = getMaxBarRadius(cdbar);
 
     var bartraces = plotinfo.plot.select('.barlayer')
         .selectAll('g.trace.bars')
@@ -49,107 +58,155 @@ module.exports = function plot(gd, plotinfo, cdbar) {
     }
 
     bartraces.append('g')
-        .attr('class', 'points')
-        .each(function(d) {
-            var sel = d3.select(this);
-            var t = d[0].t;
-            var trace = d[0].trace;
-            var poffset = t.poffset;
-            var poffsetIsArray = Array.isArray(poffset);
+    .attr('class', 'points')
+    .each(function(d) {
+        var sel = d3.select(this);
+        var trace = d[0].trace;
 
-            sel.selectAll('g.point')
-                .data(Lib.identity)
-              .enter().append('g').classed('point', true)
-                .each(function(di, i) {
-                    // now display the bar
-                    // clipped xf/yf (2nd arg true): non-positive
-                    // log values go off-screen by plotwidth
-                    // so you see them continue if you drag the plot
-                    var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
-                        p1 = p0 + di.w,
-                        s0 = di.b,
-                        s1 = s0 + di.s;
+        sel.selectAll('g.point')
+            .data(Lib.identity)
+          .enter().append('g').classed('point', true)
+            .each(function(di, i) {
+                // now display the bar
+                // clipped xf/yf (2nd arg true): non-positive
+                // log values go off-screen by plotwidth
+                // so you see them continue if you drag the plot
 
-                    var x0, x1, y0, y1;
-                    if(trace.orientation === 'h') {
-                        y0 = ya.c2p(p0, true);
-                        y1 = ya.c2p(p1, true);
-                        x0 = xa.c2p(s0, true);
-                        x1 = xa.c2p(s1, true);
+                var x0, x1, y0, y1;
 
-                        // for selections
-                        di.ct = [x1, (y0 + y1) / 2];
+                x0 = trace.coordinates[i].x0,
+                y0 = trace.coordinates[i].y0,
+                x1 = trace.coordinates[i].x1,
+                y1 = trace.coordinates[i].y1,
+                di.ct = trace.coordinates[i].ct;
+
+                if(!isNumeric(x0) || !isNumeric(x1) ||
+                        !isNumeric(y0) || !isNumeric(y1) ||
+                        x0 === x1 || y0 === y1) {
+                    d3.select(this).remove();
+                    return;
+                }
+
+                var blr = trace.cornerroundness.bottomleft,
+                    brr = trace.cornerroundness.bottomright,
+                    tlr = trace.cornerroundness.topleft,
+                    trr = trace.cornerroundness.topright;
+
+                // in case of stacked bars removes round corners from middle bars.
+                if(trace.stackPosition) {
+                    if(!trace.stackPosition.bottom[i]) {
+                        if(trace.orientation === 'v') {
+                            blr = 0;
+                            brr = 0;
+                        }
+                        else {
+                            blr = 0;
+                            tlr = 0;
+                        }
                     }
-                    else {
-                        x0 = xa.c2p(p0, true);
-                        x1 = xa.c2p(p1, true);
-                        y0 = ya.c2p(s0, true);
-                        y1 = ya.c2p(s1, true);
+                    if(!trace.stackPosition.top[i]) {
+                        if(trace.orientation === 'v') {
+                            tlr = 0;
+                            trr = 0;
+                        }
+                        else {
+                            brr = 0;
+                            trr = 0;
+                        }
+                    }
+                }
 
-                        // for selections
-                        di.ct = [(x0 + x1) / 2, y1];
+                var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
+                    (di.trace ? di.trace.marker.line.width : 0) + 1) - 1,
+                    offset = d3.round((lw / 2) % 1, 2);
+
+                function roundWithLine(v) {
+                    // if there are explicit gaps, don't round,
+                    // it can make the gaps look crappy
+                    return (fullLayout.bargap === 0 && fullLayout.bargroupgap === 0) ?
+                        d3.round(Math.round(v) - offset, 2) : v;
+                }
+
+                function expandToVisible(v, vc) {
+                    // if it's not in danger of disappearing entirely,
+                    // round more precisely
+                    return Math.abs(v - vc) >= 2 ? roundWithLine(v) :
+                    // but if it's very thin, expand it so it's
+                    // necessarily visible, even if it might overlap
+                    // its neighbor
+                    (v > vc ? Math.ceil(v) : Math.floor(v));
+                }
+
+                function generatePathDescription(x0, y0, x1, y1, bl, br, tl, tr) {
+                    if(bl === 0 && br === 0 && tl === 0 && tr === 0) {
+                        return 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
                     }
 
-                    if(!isNumeric(x0) || !isNumeric(x1) ||
-                            !isNumeric(y0) || !isNumeric(y1) ||
-                            x0 === x1 || y0 === y1) {
-                        d3.select(this).remove();
-                        return;
+                    // max allowed arc radius equals least wide edge width divided by two
+                    var r = maxBarRadius;
+
+                    // handles all possible bar drawing directions
+                    // bottom to top
+                    if(x0 < x1 && y0 > y1) {
+                        return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
+                               'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
+                               'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
+                               'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
                     }
-
-                    var lw = (di.mlw + 1 || trace.marker.line.width + 1 ||
-                            (di.trace ? di.trace.marker.line.width : 0) + 1) - 1,
-                        offset = d3.round((lw / 2) % 1, 2);
-
-                    function roundWithLine(v) {
-                        // if there are explicit gaps, don't round,
-                        // it can make the gaps look crappy
-                        return (fullLayout.bargap === 0 && fullLayout.bargroupgap === 0) ?
-                            d3.round(Math.round(v) - offset, 2) : v;
+                    // top to bottom
+                    if(x0 > x1 && y0 < y1) {
+                        return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
+                               'V' + (y1 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 - r * br) + ',' + (y1) +
+                               'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
+                               'V' + (y0 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 + r * tl) + ',' + y0 + 'Z';
                     }
-
-                    function expandToVisible(v, vc) {
-                        // if it's not in danger of disappearing entirely,
-                        // round more precisely
-                        return Math.abs(v - vc) >= 2 ? roundWithLine(v) :
-                        // but if it's very thin, expand it so it's
-                        // necessarily visible, even if it might overlap
-                        // its neighbor
-                        (v > vc ? Math.ceil(v) : Math.floor(v));
+                    // left to right
+                    if(x0 < x1 && y0 < y1) {
+                        return 'M' + (x0 + r * tl) + ',' + y0 + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x0 + ',' + (y0 + r * tl) +
+                               'V' + (y1 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x0 + r * bl) + ',' + (y1) +
+                               'H' + (x1 - r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x1 + ',' + (y1 - r * br) +
+                               'V' + (y0 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x1 - r * tr) + ',' + y0 + 'Z';
                     }
-
-                    if(!gd._context.staticPlot) {
-                        // if bars are not fully opaque or they have a line
-                        // around them, round to integer pixels, mainly for
-                        // safari so we prevent overlaps from its expansive
-                        // pixelation. if the bars ARE fully opaque and have
-                        // no line, expand to a full pixel to make sure we
-                        // can see them
-                        var op = Color.opacity(di.mc || trace.marker.color),
-                            fixpx = (op < 1 || lw > 0.01) ?
-                                roundWithLine : expandToVisible;
-                        x0 = fixpx(x0, x1);
-                        x1 = fixpx(x1, x0);
-                        y0 = fixpx(y0, y1);
-                        y1 = fixpx(y1, y0);
+                    // right to left
+                    if(x0 > x1 && y0 > y1) {
+                        return 'M' + (x0 - r * br) + ',' + y0 + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x0 + ',' + (y0 - r * br) +
+                               'V' + (y1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x0 - r * tr) + ',' + (y1) +
+                               'H' + (x1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x1 + ',' + (y1 + r * tl) +
+                               'V' + (y0 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x1 + r * bl) + ',' + y0 + 'Z';
                     }
+                }
 
-                    // append bar path and text
-                    var bar = d3.select(this);
+                if(!gd._context.staticPlot) {
+                    // if bars are not fully opaque or they have a line
+                    // around them, round to integer pixels, mainly for
+                    // safari so we prevent overlaps from its expansive
+                    // pixelation. if the bars ARE fully opaque and have
+                    // no line, expand to a full pixel to make sure we
+                    // can see them
+                    var op = Color.opacity(di.mc || trace.marker.color),
+                        fixpx = (op < 1 || lw > 0.01) ?
+                            roundWithLine : expandToVisible;
+                    x0 = fixpx(x0, x1);
+                    x1 = fixpx(x1, x0);
+                    y0 = fixpx(y0, y1);
+                    y1 = fixpx(y1, y0);
+                }
 
-                    bar.append('path')
+                // append bar path and text
+                var bar = d3.select(this);
+
+                bar.append('path')
                         .style('vector-effect', 'non-scaling-stroke')
-                        .attr('d',
-                            'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                        .attr('d', generatePathDescription(x0, y0, x1, y1, blr, brr, tlr, trr))
                         .call(Drawing.setClipUrl, plotinfo.layerClipId);
 
-                    appendBarText(gd, bar, d, i, x0, x1, y0, y1);
+                appendBarText(gd, bar, d, i, x0, x1, y0, y1);
 
-                    if(plotinfo.layerClipId) {
-                        Drawing.hideOutsideRangePoint(d[i], bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
-                    }
-                });
-        });
+                if(plotinfo.layerClipId) {
+                    Drawing.hideOutsideRangePoint(d[i], bar.select('text'), plotinfo.xaxis, plotinfo.yaxi, trace.xcalendar, trace.ycalendar);
+                }
+            });
+    });
 
     // error bars are on the top
     Registry.getComponentMethod('errorbars', 'plot')(bartraces, plotinfo);
@@ -277,6 +334,110 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     }
 
     textSelection.attr('transform', transform);
+}
+
+function calculateBarCoordinates(d, xa, ya) {
+    // calculates bar coordinates in order to later find out appropriate corner roundness radius
+    var t = d[0].t;
+    var trace = d[0].trace;
+    var poffset = t.poffset;
+    var poffsetIsArray = Array.isArray(poffset);
+
+    trace.coordinates = [];
+
+    d.forEach(function(di, i) {
+        var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
+            p1 = p0 + di.w,
+            s0 = di.b,
+            s1 = s0 + di.s;
+        var x0, x1, y0, y1;
+        if(trace.orientation === 'h') {
+            y0 = ya.c2p(p0, true);
+            y1 = ya.c2p(p1, true);
+            x0 = xa.c2p(s0, true);
+            x1 = xa.c2p(s1, true);
+            // for selections
+            di.ct = [x1, (y0 + y1) / 2];
+        }
+        else {
+            x0 = xa.c2p(p0, true);
+            x1 = xa.c2p(p1, true);
+            y0 = ya.c2p(s0, true);
+            y1 = ya.c2p(s1, true);
+            // for selections
+            di.ct = [(x0 + x1) / 2, y1];
+        }
+        trace.coordinates.push({ x0: x0, y0: y0, x1: x1, y1: y1, ct: di.ct });
+    });
+    d[0].trace = trace;
+    return d;
+}
+
+function calculatePositionInStack(cdbar) {
+    // calculate which bars go into which stack,
+    // and whether the bar is in stack top or bottom
+    var array = [];
+    for(var i = 0; i < cdbar.length; i++) {
+        var object = (cdbar[i][0].trace.orientation === 'v') ? underscore.object(cdbar[i][0].trace.x, cdbar[i][0].trace.y) : underscore.object(cdbar[i][0].trace.y, cdbar[i][0].trace.x);
+        array.push(object);
+    }
+    var index = 0;
+    array.reverse().forEach(function(o) {
+        var cdbarIndex = array.length - index - 1;
+        cdbar[cdbarIndex][0].trace.stackPosition = {
+            bottom: [],
+            top: []
+        };
+        Object.keys(o).forEach(function(key) {
+            var topResult = true;
+            var bottomResult = true;
+            if(o[key] === null) {
+                topResult = bottomResult = false;
+            }
+            else {
+                var j = index;
+                while(--j >= 0) {
+                    if(!bottomResult && !topResult) break;
+                    if(array[j].hasOwnProperty(key)) {
+                        if(array[index][key] < 0 && array[j][key] < 0) bottomResult = false;
+                        if(array[index][key] < 0 && array[j][key] > 0) topResult = false;
+                        if(array[index][key] >= 0 && array[j][key] > 0) topResult = false;
+                        if(array[index][key] >= 0 && array[j][key] < 0) bottomResult = false;
+                    }
+                }
+                j = index;
+                while(++j < array.length) {
+                    if(!bottomResult && !topResult) break;
+                    if(array[j].hasOwnProperty(key)) {
+                        if(array[index][key] < 0 && array[j][key]) topResult = false;
+                        if(array[index][key] >= 0 && array[j][key]) bottomResult = false;
+                    }
+                }
+            }
+            cdbar[cdbarIndex][0].trace.stackPosition.bottom.push(bottomResult);
+            cdbar[cdbarIndex][0].trace.stackPosition.top.push(topResult);
+        });
+        index++;
+    });
+    return cdbar;
+}
+
+function getMaxBarRadius(cdbar) {
+    // max bar roundness radius is equal to least widest bar width,
+    // so all the bars look the same otherwise larger bars will look completely
+    // different from very small bar. If high roundness percentage is used.
+    var maxBarRadius = null;
+    cdbar.forEach(function(d) {
+        d[0].trace.coordinates.forEach(function(di, i) {
+            // skip bars that aren't in the top or the bottom of the bar.
+            if(d[0].trace.stackPosition && (!d[0].trace.stackPosition.bottom[i] && !d[0].trace.stackPosition.top[i])) return;
+            else {
+                var r = Math.min(Math.abs(di.x0 - di.x1), Math.abs(di.y0 - di.y1)) / 2;
+                maxBarRadius = (maxBarRadius > r || !isNumeric(maxBarRadius)) ? r : maxBarRadius;
+            }
+        });
+    });
+    return (maxBarRadius !== null) ? maxBarRadius : 0;
 }
 
 function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
