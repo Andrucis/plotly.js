@@ -31,6 +31,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     }
 
     coerce('marker.line.width');
+    coerce('marker.line.dash');
     coerce('marker.opacity');
     coerce('selected.marker.color');
     coerce('unselected.marker.color');

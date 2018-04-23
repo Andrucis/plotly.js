@@ -41,6 +41,12 @@ module.exports = function style(gd, cd) {
 
         Drawing.pointStyle(pts, trace, gd);
         Drawing.selectedPointStyle(pts, trace);
+        pts[0].forEach(function(element, index) {
+            var d3element = d3.select(element);
+            d3element.style(
+                'stroke-dasharray',
+                Drawing.dashStyle(trace.marker.line.dash[index], trace.marker.line.width[index]));
+        });
 
         txs.each(function(d) {
             var tx = d3.select(this);
