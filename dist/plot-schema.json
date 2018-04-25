@@ -2491,6 +2491,45 @@
                     "editType": "calc+clearAxisTypes",
                     "description": "Sets the orientation of the bars. With *v* (*h*), the value of the each bar spans along the vertical (horizontal)."
                 },
+                "cornerroundness": {
+                    "bottomleft": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc",
+                        "description": "Sets round corner for bar bottom left edge, taking into account direction. Value represents percentage of desirable roundness."
+                    },
+                    "bottomright": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc"
+                    },
+                    "topleft": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc",
+                        "description": "Sets round corner for bar top left edge, taking into account direction. Value represents percentage of desirable roundness."
+                    },
+                    "topright": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc",
+                        "description": "Sets round corner for bar top right edge, taking into account direction. Value represents percentage of desirable roundness."
+                    },
+                    "editType": "calc",
+                    "role": "object"
+                },
                 "base": {
                     "valType": "any",
                     "dflt": null,
@@ -2587,6 +2626,22 @@
                             "editType": "calc",
                             "description": "Has an effect only if `marker.line.color` is set to a numerical array. Reverses the color mapping if true (`cmin` will correspond to the last color in the array and `cmax` will correspond to the first color)."
                         },
+                        "dash": {
+                            "valType": "string",
+                            "arrayOk": true,
+                            "values": [
+                                "solid",
+                                "dot",
+                                "dash",
+                                "longdash",
+                                "dashdot",
+                                "longdashdot"
+                            ],
+                            "dflt": "solid",
+                            "role": "style",
+                            "editType": "style",
+                            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*)."
+                        },
                         "role": "object",
                         "widthsrc": {
                             "valType": "string",
@@ -2598,6 +2653,12 @@
                             "valType": "string",
                             "role": "info",
                             "description": "Sets the source reference on plot.ly for  color .",
+                            "editType": "none"
+                        },
+                        "dashsrc": {
+                            "valType": "string",
+                            "role": "info",
+                            "description": "Sets the source reference on plot.ly for  dash .",
                             "editType": "none"
                         }
                     },
@@ -5689,6 +5750,45 @@
                     "editType": "calc+clearAxisTypes",
                     "description": "Sets the orientation of the bars. With *v* (*h*), the value of the each bar spans along the vertical (horizontal)."
                 },
+                "cornerroundness": {
+                    "bottomleft": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc",
+                        "description": "Sets round corner for bar bottom left edge, taking into account direction. Value represents percentage of desirable roundness."
+                    },
+                    "bottomright": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc"
+                    },
+                    "topleft": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc",
+                        "description": "Sets round corner for bar top left edge, taking into account direction. Value represents percentage of desirable roundness."
+                    },
+                    "topright": {
+                        "valType": "number",
+                        "min": 0,
+                        "max": 1,
+                        "dflt": 0,
+                        "role": "info",
+                        "editType": "calc",
+                        "description": "Sets round corner for bar top right edge, taking into account direction. Value represents percentage of desirable roundness."
+                    },
+                    "editType": "calc",
+                    "role": "object"
+                },
                 "histfunc": {
                     "valType": "enumerated",
                     "values": [
@@ -5930,6 +6030,22 @@
                             "editType": "calc",
                             "description": "Has an effect only if `marker.line.color` is set to a numerical array. Reverses the color mapping if true (`cmin` will correspond to the last color in the array and `cmax` will correspond to the first color)."
                         },
+                        "dash": {
+                            "valType": "string",
+                            "arrayOk": true,
+                            "values": [
+                                "solid",
+                                "dot",
+                                "dash",
+                                "longdash",
+                                "dashdot",
+                                "longdashdot"
+                            ],
+                            "dflt": "solid",
+                            "role": "style",
+                            "editType": "style",
+                            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*)."
+                        },
                         "role": "object",
                         "widthsrc": {
                             "valType": "string",
@@ -5941,6 +6057,12 @@
                             "valType": "string",
                             "role": "info",
                             "description": "Sets the source reference on plot.ly for  color .",
+                            "editType": "none"
+                        },
+                        "dashsrc": {
+                            "valType": "string",
+                            "role": "info",
+                            "description": "Sets the source reference on plot.ly for  dash .",
                             "editType": "none"
                         }
                     },

@@ -74,7 +74,7 @@ The main plotly.js bundle weights in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 6.2 MB | 2.6 MB | 778.4 kB | 6.4 MB |
+| 6.3 MB | 2.6 MB | 783.5 kB | 6.5 MB |
 
 ## Partial bundles
 
@@ -104,7 +104,7 @@ The `basic` partial bundle contains the `scatter`, `bar` and `pie` trace modules
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.1 MB | 744.9 kB | 242.5 kB |
+| 2.2 MB | 762.1 kB | 247.8 kB |
 
 ### plotly.js cartesian
 
@@ -122,7 +122,7 @@ The `cartesian` partial bundle contains the `scatter`, `bar`, `box`, `heatmap`, 
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.4 MB | 855.4 kB | 276.9 kB |
+| 2.5 MB | 872.8 kB | 282.2 kB |
 
 ### plotly.js geo
 
@@ -140,7 +140,7 @@ The `geo` partial bundle contains the `scatter`, `scattergeo` and `choropleth` t
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.1 MB | 768.7 kB | 251.7 kB |
+| 2.1 MB | 768.7 kB | 251.6 kB |
 
 ### plotly.js gl3d
 
@@ -158,7 +158,7 @@ The `gl3d` partial bundle contains the `scatter`, `scatter3d`, `surface` and `me
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3 MB | 1.2 MB | 380.6 kB |
+| 3 MB | 1.2 MB | 380.5 kB |
 
 ### plotly.js gl2d
 
@@ -176,7 +176,7 @@ The `gl2d` partial bundle contains the `scatter`, `scattergl`, `splom`, `pointcl
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.1 MB | 1.3 MB | 409.3 kB |
+| 3.2 MB | 1.3 MB | 409.3 kB |
 
 ### plotly.js mapbox
 
@@ -194,7 +194,7 @@ The `mapbox` partial bundle contains the `scatter` and `scattermapbox` trace mod
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.3 MB | 394.8 kB |
+| 3.4 MB | 1.3 MB | 394.8 kB |
 
 ### plotly.js finance
 
@@ -212,7 +212,7 @@ The `finance` partial bundle contains the `scatter`, `bar`, `histogram`, `pie`, 
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.1 MB | 774.6 kB | 251.4 kB |
+| 2.2 MB | 792 kB | 256.8 kB |
 
 ----------------
 
