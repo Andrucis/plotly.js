@@ -442,7 +442,7 @@ function getMaxBarRadius(cdbar) {
             if(d[0].trace.stackPosition && (!d[0].trace.stackPosition.bottom[i] && !d[0].trace.stackPosition.top[i])) return;
             else {
                 var r = Math.min(Math.abs(di.x0 - di.x1), Math.abs(di.y0 - di.y1)) / 2;
-                maxBarRadius = (maxBarRadius > r || !isNumeric(maxBarRadius)) ? r : maxBarRadius;
+                maxBarRadius = (maxBarRadius > r || !isNumeric(maxBarRadius || maxBarRadius === 0)) ? r : maxBarRadius;
             }
         });
     });
