@@ -1,14 +1,14 @@
 {
     "data": [
     {
-        "x": [10, 7, 9],
+        "x": [10, 7, -4],
         "y": [-8, -14, -3],
         "name": "Horizontal right values",
         "orientation": "h",
         "cornerroundness": {
             "bottomleft": 0,
-            "bottomright": 1,
-            "topleft": 0,
+            "bottomright": 0,
+            "topleft": 1,
             "topright": 1
         },
         "marker": {
@@ -17,15 +17,15 @@
         "type": "bar"
     },
     {
-        "x": [-10, -7, -9],
+        "x": [-10, 7, -9],
         "y": [18, 24, 13],
         "name": "Horizontal left values",
         "orientation": "h",
         "cornerroundness": {
-            "bottomleft": 0.3,
+            "bottomleft": 0,
             "bottomright": 0,
             "topleft": 0.3,
-            "topright": 0
+            "topright": 0.3
         },
         "marker": {
           "color": "rgba(0,120,120,0.6)"
@@ -34,7 +34,7 @@
     },
     {
         "x": [2, 5, 7],
-        "y": [5, 20, 13],
+        "y": [-5, 20, 13],
         "name": "Vertical up values",
         "orientation": "v",
         "cornerroundness": {
@@ -50,14 +50,14 @@
       },
       {
         "x": [-2, -5, -7],
-        "y": [-5, -20, -13],
+        "y": [5, -20, -13],
         "name": "Vertical down values",
         "orientation": "v",
         "cornerroundness": {
-            "bottomleft": 0.5,
-            "bottomright": 0.5,
-            "topleft": 0,
-            "topright": 0
+            "bottomleft": 0,
+            "bottomright": 0,
+            "topleft": 0.5,
+            "topright": 0.5
         },
         "type": "bar",
         "marker": {

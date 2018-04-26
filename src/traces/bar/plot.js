@@ -146,33 +146,42 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     var r = maxBarRadius;
 
                     // handles all possible bar drawing directions
-                    // bottom to top
                     if(x0 < x1 && y0 > y1) {
-                        return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
-                               'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
-                               'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
-                               'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
+                        // bottom to top
+                        if(trace.orientation === 'v') {
+                            return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
+                                   'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
+                                   'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
+                                   'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
+                        }
+                        // right to left
+                        if(trace.orientation === 'h') {
+                            return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
+                                   'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 + r * br) + ',' + (y1) +
+                                   'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
+                                   'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 - r * tl) + ',' + y0 + 'Z';
+                        }
                     }
                     // top to bottom
-                    if(x0 > x1 && y0 < y1) {
-                        return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
-                               'V' + (y1 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 - r * br) + ',' + (y1) +
-                               'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
-                               'V' + (y0 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 + r * tl) + ',' + y0 + 'Z';
+                    if(x0 < x1 && y0 < y1) {
+                        return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 + r * bl) +
+                               'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x0 + r * tl) + ',' + (y1) +
+                               'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 - r * tr) +
+                               'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x1 - r * br) + ',' + y0 + 'Z';
                     }
                     // left to right
-                    if(x0 < x1 && y0 < y1) {
-                        return 'M' + (x0 + r * tl) + ',' + y0 + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x0 + ',' + (y0 + r * tl) +
-                               'V' + (y1 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x0 + r * bl) + ',' + (y1) +
-                               'H' + (x1 - r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x1 + ',' + (y1 - r * br) +
-                               'V' + (y0 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x1 - r * tr) + ',' + y0 + 'Z';
-                    }
-                    // right to left
                     if(x0 > x1 && y0 > y1) {
-                        return 'M' + (x0 - r * br) + ',' + y0 + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x0 + ',' + (y0 - r * br) +
-                               'V' + (y1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x0 - r * tr) + ',' + (y1) +
-                               'H' + (x1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x1 + ',' + (y1 + r * tl) +
-                               'V' + (y0 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x1 + r * bl) + ',' + y0 + 'Z';
+                        return 'M' + (x0 - r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 - r * bl) +
+                               'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x0 - r * br) + ',' + (y1) +
+                               'H' + (x1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 + r * tr) +
+                               'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x1 + r * tl) + ',' + y0 + 'Z';
+                    }
+                    // unknown
+                    if(x0 > x1 && y0 < y1) {
+                        return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
+                               'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 - r * tl) + ',' + (y1) +
+                               'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
+                               'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 + r * br) + ',' + y0 + 'Z';
                     }
                 }
 
