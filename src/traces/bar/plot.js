@@ -145,76 +145,43 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     // max allowed arc radius equals least wide edge width divided by two
                     var r = maxBarRadius;
 
-                    if(trace.stackPosition) {
-                        // handles all possible bar drawing directions
+                    // handles all possible bar drawing directions
+                    if(x0 < x1 && y0 > y1) {
                         // bottom to top
-                        if(x0 < x1 && y0 > y1) {
+                        if(trace.orientation === 'v') {
                             return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
                                 'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
                                 'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
                                 'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
                         }
-                        // top to bottom
-                        if(x0 > x1 && y0 < y1) {
-                            return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
-                                'V' + (y1 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 - r * br) + ',' + (y1) +
-                                'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
-                                'V' + (y0 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 + r * tl) + ',' + y0 + 'Z';
-                        }
-                        // left to right
-                        if(x0 < x1 && y0 < y1) {
-                            return 'M' + (x0 + r * tl) + ',' + y0 + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x0 + ',' + (y0 + r * tl) +
-                                'V' + (y1 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x0 + r * bl) + ',' + (y1) +
-                                'H' + (x1 - r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x1 + ',' + (y1 - r * br) +
-                                'V' + (y0 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x1 - r * tr) + ',' + y0 + 'Z';
-                        }
                         // right to left
-                        if(x0 > x1 && y0 > y1) {
-                            return 'M' + (x0 - r * br) + ',' + y0 + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x0 + ',' + (y0 - r * br) +
-                                'V' + (y1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x0 - r * tr) + ',' + (y1) +
-                                'H' + (x1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x1 + ',' + (y1 + r * tl) +
-                                'V' + (y0 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x1 + r * bl) + ',' + y0 + 'Z';
+                        if(trace.orientation === 'h') {
+                            return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
+                                'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 + r * br) + ',' + (y1) +
+                                'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
+                                'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 - r * tl) + ',' + y0 + 'Z';
                         }
                     }
-                    else {
-                        // handles all possible bar drawing directions
-                        if(x0 < x1 && y0 > y1) {
-                            // bottom to top
-                            if(trace.orientation === 'v') {
-                                return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
-                                    'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
-                                    'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
-                                    'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
-                            }
-                            // right to left
-                            if(trace.orientation === 'h') {
-                                return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
-                                    'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 + r * br) + ',' + (y1) +
-                                    'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
-                                    'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 - r * tl) + ',' + y0 + 'Z';
-                            }
-                        }
-                        // top to bottom
-                        if(x0 < x1 && y0 < y1) {
-                            return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 + r * bl) +
-                                'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x0 + r * tl) + ',' + (y1) +
-                                'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 - r * tr) +
-                                'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x1 - r * br) + ',' + y0 + 'Z';
-                        }
-                        // left to right
-                        if(x0 > x1 && y0 > y1) {
-                            return 'M' + (x0 - r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 - r * bl) +
-                                'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x0 - r * br) + ',' + (y1) +
-                                'H' + (x1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 + r * tr) +
-                                'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x1 + r * tl) + ',' + y0 + 'Z';
-                        }
-                        // unknown
-                        if(x0 > x1 && y0 < y1) {
-                            return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
-                                'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 - r * tl) + ',' + (y1) +
-                                'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
-                                'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 + r * br) + ',' + y0 + 'Z';
-                        }
+                    // top to bottom
+                    if(x0 < x1 && y0 < y1) {
+                        return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 + r * bl) +
+                            'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x0 + r * tl) + ',' + (y1) +
+                            'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 - r * tr) +
+                            'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x1 - r * br) + ',' + y0 + 'Z';
+                    }
+                    // left to right
+                    if(x0 > x1 && y0 > y1) {
+                        return 'M' + (x0 - r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 - r * bl) +
+                            'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x0 - r * br) + ',' + (y1) +
+                            'H' + (x1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 + r * tr) +
+                            'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x1 + r * tl) + ',' + y0 + 'Z';
+                    }
+                    // unknown
+                    if(x0 > x1 && y0 < y1) {
+                        return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
+                            'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 - r * tl) + ',' + (y1) +
+                            'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
+                            'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 + r * br) + ',' + y0 + 'Z';
                     }
 
                 }
@@ -476,7 +443,7 @@ function getMaxBarRadius(cdbar) {
             if(d[0].trace.stackPosition && (!d[0].trace.stackPosition.bottom[i] && !d[0].trace.stackPosition.top[i])) return;
             else {
                 var r = Math.min(Math.abs(di.x0 - di.x1), Math.abs(di.y0 - di.y1)) / 2;
-                maxBarRadius = (maxBarRadius > r || !isNumeric(maxBarRadius || maxBarRadius === 0)) ? r : maxBarRadius;
+                maxBarRadius = ((maxBarRadius > r || !isNumeric(maxBarRadius)) && r !== 0) ? r : maxBarRadius;
             }
         });
     });
