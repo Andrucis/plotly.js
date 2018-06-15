@@ -41,11 +41,16 @@ module.exports = function style(gd, cd) {
 
         Drawing.pointStyle(pts, trace, gd);
         Drawing.selectedPointStyle(pts, trace);
+        var emptyTraces = 0;
         pts[0].forEach(function(element, index) {
+            while(trace.x[index + emptyTraces] === null || trace.x[index + emptyTraces] === 0 ||
+                trace.y[index + emptyTraces] === null || trace.y[index + emptyTraces] === 0) {
+                emptyTraces++;
+            }
             var d3element = d3.select(element);
             d3element.style(
                 'stroke-dasharray',
-                Drawing.dashStyle(trace.marker.line.dash[index], trace.marker.line.width[index]));
+                Drawing.dashStyle(trace.marker.line.dash[index + emptyTraces], trace.marker.line.width[index + emptyTraces]));
         });
 
         txs.each(function(d) {
