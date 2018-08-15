@@ -1,9 +1,3 @@
-/**
-* plotly.js (cartesian) v1.36.1
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-* Licensed under the MIT license
-*/
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 'use strict';
 
@@ -63224,34 +63218,44 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     var r = maxBarRadius;
 
                     // handles all possible bar drawing directions
-                    // bottom to top
                     if(x0 < x1 && y0 > y1) {
-                        return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
-                               'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
-                               'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
-                               'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
+                        // bottom to top
+                        if(trace.orientation === 'v') {
+                            return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
+                                'V' + (y1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 + r * tl) + ',' + (y1) +
+                                'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
+                                'V' + (y0 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 - r * br) + ',' + y0 + 'Z';
+                        }
+                        // right to left
+                        if(trace.orientation === 'h') {
+                            return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x0 + ',' + (y0 - r * bl) +
+                                'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 + r * br) + ',' + (y1) +
+                                'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x1 + ',' + (y1 + r * tr) +
+                                'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 - r * tl) + ',' + y0 + 'Z';
+                        }
                     }
                     // top to bottom
-                    if(x0 > x1 && y0 < y1) {
-                        return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
-                               'V' + (y1 - r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x0 - r * br) + ',' + (y1) +
-                               'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
-                               'V' + (y0 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x1 + r * tl) + ',' + y0 + 'Z';
+                    if(x0 < x1 && y0 < y1) {
+                        return 'M' + (x0 + r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 + r * bl) +
+                            'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x0 + r * tl) + ',' + (y1) +
+                            'H' + (x1 - r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 - r * tr) +
+                            'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x1 - r * br) + ',' + y0 + 'Z';
                     }
                     // left to right
-                    if(x0 < x1 && y0 < y1) {
-                        return 'M' + (x0 + r * tl) + ',' + y0 + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x0 + ',' + (y0 + r * tl) +
-                               'V' + (y1 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x0 + r * bl) + ',' + (y1) +
-                               'H' + (x1 - r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x1 + ',' + (y1 - r * br) +
-                               'V' + (y0 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x1 - r * tr) + ',' + y0 + 'Z';
-                    }
-                    // right to left
                     if(x0 > x1 && y0 > y1) {
-                        return 'M' + (x0 - r * br) + ',' + y0 + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + x0 + ',' + (y0 - r * br) +
-                               'V' + (y1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + (x0 - r * tr) + ',' + (y1) +
-                               'H' + (x1 + r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + x1 + ',' + (y1 + r * tl) +
-                               'V' + (y0 - r * bl) + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + (x1 + r * bl) + ',' + y0 + 'Z';
+                        return 'M' + (x0 - r * bl) + ',' + y0 + 'A' + r * bl + ',' + r * bl + ' 1 0 0 ' + x0 + ',' + (y0 - r * bl) +
+                            'V' + (y1 + r * br) + 'A' + r * br + ',' + r * br + ' 1 0 0 ' + (x0 - r * br) + ',' + (y1) +
+                            'H' + (x1 + r * tr) + 'A' + r * tr + ',' + r * tr + ' 1 0 0 ' + x1 + ',' + (y1 + r * tr) +
+                            'V' + (y0 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 1 0 0 ' + (x1 + r * tl) + ',' + y0 + 'Z';
                     }
+                    // unknown
+                    if(x0 > x1 && y0 < y1) {
+                        return 'M' + (x0 - r * tr) + ',' + y0 + 'A' + r * tr + ',' + r * tr + ' 0 0 1 ' + x0 + ',' + (y0 + r * tr) +
+                            'V' + (y1 - r * tl) + 'A' + r * tl + ',' + r * tl + ' 0 0 1 ' + (x0 - r * tl) + ',' + (y1) +
+                            'H' + (x1 + r * bl) + 'A' + r * bl + ',' + r * bl + ' 0 0 1 ' + x1 + ',' + (y1 - r * bl) +
+                            'V' + (y0 + r * br) + 'A' + r * br + ',' + r * br + ' 0 0 1 ' + (x1 + r * br) + ',' + y0 + 'Z';
+                    }
+
                 }
 
                 if(!gd._context.staticPlot) {
@@ -63511,7 +63515,7 @@ function getMaxBarRadius(cdbar) {
             if(d[0].trace.stackPosition && (!d[0].trace.stackPosition.bottom[i] && !d[0].trace.stackPosition.top[i])) return;
             else {
                 var r = Math.min(Math.abs(di.x0 - di.x1), Math.abs(di.y0 - di.y1)) / 2;
-                maxBarRadius = (maxBarRadius > r || !isNumeric(maxBarRadius)) ? r : maxBarRadius;
+                maxBarRadius = ((maxBarRadius > r || !isNumeric(maxBarRadius)) && r !== 0) ? r : maxBarRadius;
             }
         });
     });
@@ -64629,11 +64633,16 @@ module.exports = function style(gd, cd) {
 
         Drawing.pointStyle(pts, trace, gd);
         Drawing.selectedPointStyle(pts, trace);
+        var emptyTraces = 0;
         pts[0].forEach(function(element, index) {
+            while(trace.x[index + emptyTraces] === null || trace.x[index + emptyTraces] === 0 ||
+                trace.y[index + emptyTraces] === null || trace.y[index + emptyTraces] === 0) {
+                emptyTraces++;
+            }
             var d3element = d3.select(element);
             d3element.style(
                 'stroke-dasharray',
-                Drawing.dashStyle(trace.marker.line.dash[index], trace.marker.line.width[index]));
+                Drawing.dashStyle(trace.marker.line.dash[index + emptyTraces], trace.marker.line.width[index + emptyTraces]));
         });
 
         txs.each(function(d) {
